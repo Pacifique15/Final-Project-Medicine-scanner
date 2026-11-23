@@ -1,0 +1,9 @@
+Options -Indexes
+RewriteEngine On
+RewriteRule ^$ auth_router.php?auth_page=index.html [QSA,L]
+RewriteCond %{REQUEST_URI} !/account\.html$ [NC]
+RewriteRule ^(.+\.html)$ auth_router.php?auth_page=$1 [QSA,L,NC]
+
+<FilesMatch "(?i)^(\.env.*|.*\.(sqlite|db))$">
+  Require all denied
+</FilesMatch>

@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b4fb3">
+  <title>Account - Medicine Scanner</title>
+  <style>
+:root{color-scheme:light;--bg:#edf3fb;--card:#fff;--ink:#14243b;--muted:#60718a;--line:#d5deeb;--blue:#0b4fb3;--green:#167b43;--red:#b42318}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 10% 5%,#dcecff 0,transparent 42%),var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.nav{min-height:58px;background:#082f69;color:#fff;display:flex;align-items:center;gap:12px;padding:8px clamp(14px,4vw,48px)}
+.brand{font-weight:750;margin-right:auto;white-space:nowrap}.nav nav{display:flex;flex-wrap:wrap;gap:4px}.nav a{color:#fff;text-decoration:none;padding:9px 12px;border-radius:8px;font-weight:600}.nav a:hover,.nav a.active{background:#ffffff24}
+main{width:min(100% - 28px,620px);margin:clamp(24px,6vh,64px) auto}
+.intro{text-align:center;margin-bottom:20px}.intro h1{font-size:clamp(1.7rem,4vw,2.2rem);line-height:1.15;margin:0 0 8px}.intro p,.note{color:var(--muted);margin:0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:clamp(18px,4vw,28px);box-shadow:0 18px 48px #102e5612}
+.tabs,.row,.actions{display:flex;gap:10px}.tabs{margin-bottom:18px}.tabs button{flex:1}
+h2{font-size:1.15rem;margin:0 0 14px}label{display:block;color:var(--muted);font-size:.9rem;font-weight:600;margin:12px 0 5px}
+input{width:100%;font:inherit;padding:11px 12px;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+input:focus-visible,button:focus-visible,a:focus-visible{outline:3px solid #78aaff;outline-offset:2px}
+button{font:inherit;font-weight:700;border:0;border-radius:9px;padding:11px 16px;cursor:pointer;background:var(--blue);color:#fff}
+button:hover{filter:brightness(.94)}button.alt{background:#f1f5fb;color:var(--ink);border:1px solid var(--line)}
+.row>*{flex:1;min-width:0}.row button{flex:0 0 auto}.check-row{display:flex;align-items:center;gap:9px;margin:12px 0}.check-row input{width:auto}
+.actions{margin-top:16px;flex-wrap:wrap;align-items:center}.actions a{text-decoration:none}.message{min-height:1.5em;margin-top:12px;font-size:.93rem}.message.good{color:var(--green)}.message.error{color:var(--red)}
+.hide{display:none!important}details{margin-top:16px}details summary{cursor:pointer;font-weight:700}.small-link{border:0;background:none;color:var(--blue);font:inherit;text-decoration:underline;padding:4px 0;cursor:pointer}
+@media(max-width:600px){.nav{align-items:flex-start;flex-direction:column}.nav nav{width:100%}.nav a{padding:8px}.row{display:block}.row>*{display:block;margin-bottom:8px}.actions>*{flex:1}.tabs button{padding-inline:8px}}
+  </style>
+</head>
+<body>
+<header class="nav">
+  <span class="brand">💊 Medicine Scanner</span>
+  <nav aria-label="Main navigation"><a href="account.html" class="active">Account</a></nav>
+</header>
+<main>
+  <div class="intro">
+    <h1>Medicine Scanner</h1>
+    <p>Sign in or create an account to use your medicine scanning tools.</p>
+  </div>
+  <div class="tabs" id="accountTabs">
+    <button id="loginTab" type="button">Sign in</button>
+    <button id="registerTab" class="alt" type="button">Create account</button>
+  </div>
+
+  <section id="loginPanel" class="card">
+    <h2>Welcome back</h2>
+    <form id="loginForm">
+      <label for="loginIdentity">Username or email address</label>
+      <input id="loginIdentity" name="identity" autocomplete="username" maxlength="254" required>
+      <label for="loginPassword">Password</label>
+      <div class="row"><input id="loginPassword" name="password" type="password" autocomplete="current-password" maxlength="72" required>
+        <button id="toggleLoginPassword" class="alt" type="button" aria-pressed="false">Show</button></div>
+      <label class="check-row"><input type="checkbox" name="remember_me" value="1">Remember me on this device for 30 days</label>
+      <div class="actions"><button type="submit">Sign in</button><button id="forgotPassword" class="alt" type="button">Forgot password?</button></div>
+      <div id="loginMessage" class="message" aria-live="polite"></div>
+    </form>
+  </section>
+
+  <section id="registerPanel" class="card hide">
+    <h2>Create your account</h2>
+    <form id="registerForm">
+      <label for="fullName">Full name</label>
+      <input id="fullName" name="full_name" autocomplete="name" minlength="2" maxlength="80" required>
+      <div class="row">
+        <div><label for="username">Username</label><input id="username" name="username" autocomplete="username" minlength="3" maxlength="32" pattern="[A-Za-z0-9._-]+" required></div>
+        <div><label for="email">Email address</label><input id="email" name="email" type="email" autocomplete="email" maxlength="254" required></div>
+      </div>
+      <label for="phone">Phone number (optional)</label>
+      <input id="phone" name="phone" type="tel" autocomplete="tel" maxlength="24">
+      <div class="row">
+        <div><label for="password">Password (10-72 characters)</label><input id="password" name="password" type="password" autocomplete="new-password" minlength="10" maxlength="72" required></div>
+        <div><label for="confirmPassword">Confirm password</label><input id="confirmPassword" name="confirm_password" type="password" autocomplete="new-password" minlength="10" maxlength="72" required></div>
+      </div>
+      <div class="actions"><button type="submit">Create account</button><button class="small-link" type="button" id="backToSignIn">Already have an account? Sign in</button></div>
+      <div id="registerMessage" class="message" aria-live="polite"></div>
+    </form>
+  </section>
+
+  <section id="resetRequestPanel" class="card hide">
+    <h2>Reset your password</h2>
+    <p class="note">Enter the email address on your account. If it matches, we will send a one-time reset link.</p>
+    <form id="resetRequestForm">
+      <label for="resetEmail">Email address</label><input id="resetEmail" type="email" name="email" autocomplete="email" maxlength="254" required>
+      <div class="actions"><button type="submit">Send reset link</button><button id="resetBackToLogin" class="alt" type="button">Back to sign in</button></div>
+      <div id="resetRequestMessage" class="message" aria-live="polite"></div>
+    </form>
+  </section>
+
+  <section id="resetPasswordPanel" class="card hide">
+    <h2>Choose a new password</h2>
+    <form id="resetPasswordForm">
+      <label for="resetNewPassword">New password (10-72 characters)</label><input id="resetNewPassword" type="password" name="new_password" autocomplete="new-password" minlength="10" maxlength="72" required>
+      <label for="resetConfirmPassword">Confirm new password</label><input id="resetConfirmPassword" type="password" name="confirm_password" autocomplete="new-password" minlength="10" maxlength="72" required>
+      <div class="actions"><button type="submit">Reset password</button></div>
+      <div id="resetPasswordMessage" class="message" aria-live="polite"></div>
+    </form>
+  </section>
+
+  <section id="signedInPanel" class="card hide">
+    <h2>Account</h2>
+    <p id="accountSummary"></p>
+    <div class="actions"><a href="index.html"><button type="button">Open Medicine Scanner</button></a><button id="logoutButton" class="alt" type="button">Sign out</button></div>
+    <div id="sessionMessage" class="message" aria-live="polite"></div>
+    <details>
+      <summary>Profile settings</summary>
+      <form id="profileForm">
+        <label for="profileName">Full name</label><input id="profileName" name="full_name" maxlength="80" autocomplete="name" required>
+        <label for="profileEmail">Email address</label><input id="profileEmail" name="email" type="email" maxlength="254" autocomplete="email" required>
+        <label for="profilePhone">Phone number (optional)</label><input id="profilePhone" name="phone" type="tel" maxlength="24" autocomplete="tel">
+        <div class="actions"><button type="submit">Save profile</button></div>
+        <div id="profileMessage" class="message" aria-live="polite"></div>
+      </form>
+    </details>
+    <details>
+      <summary>Change password</summary>
+      <form id="changePasswordForm">
+        <label for="currentPassword">Current password</label><input id="currentPassword" name="current_password" type="password" autocomplete="current-password" maxlength="72" required>
+        <label for="newPassword">New password (10-72 characters)</label><input id="newPassword" name="new_password" type="password" autocomplete="new-password" minlength="10" maxlength="72" required>
+        <label for="confirmNewPassword">Confirm new password</label><input id="confirmNewPassword" name="confirm_password" type="password" autocomplete="new-password" minlength="10" maxlength="72" required>
+        <div class="actions"><button type="submit">Change password</button></div>
+        <div id="passwordMessage" class="message" aria-live="polite"></div>
+      </form>
+    </details>
+  </section>
+</main>
+<script>
+const $ = id => document.getElementById(id);
+let csrfToken = '';
+const resetToken = new URLSearchParams(location.search).get('reset_token') || '';
+if (resetToken) history.replaceState(null, '', 'account.html');
+
+async function request(action, body) {
+  if (location.protocol === 'file:') {
+    throw new Error('Open the site through PHP, not this file. Run start.bat and visit http://localhost:8000/.');
+  }
+  const options = body ? {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(Object.assign({}, body, { csrf_token: csrfToken }))
+  } : { cache: 'no-store' };
+  let response;
+  try {
+    response = await fetch('api.php?action=' + encodeURIComponent(action), options);
+  } catch (error) {
+    throw new Error('Cannot reach the PHP server. Run start.bat and open http://localhost:8000/.');
+  }
+  let data;
+  try {
+    data = await response.json();
+  } catch (error) {
+    const contentType = response.headers.get('content-type') || 'unknown content type';
+    throw new Error(`The PHP API returned a non-JSON response (HTTP ${response.status}, ${contentType}). Confirm api.php is running through PHP and check the PHP server error log.`);
+  }
+  if (!response.ok || !data.ok) throw new Error(data.error || 'Request failed.');
+  return data;
+}
+function message(element, text, good) {
+  element.textContent = text;
+  element.className = 'message ' + (good ? 'good' : 'error');
+}
+function showPanel(panel) {
+  ['loginPanel', 'registerPanel', 'resetRequestPanel', 'resetPasswordPanel', 'signedInPanel'].forEach(id => $(id).classList.toggle('hide', id !== panel));
+  $('accountTabs').classList.toggle('hide', !['loginPanel', 'registerPanel'].includes(panel));
+  $('loginTab').classList.toggle('alt', panel !== 'loginPanel');
+  $('registerTab').classList.toggle('alt', panel !== 'registerPanel');
+}
+function showAccount(account) {
+  showPanel('signedInPanel');
+  $('accountSummary').textContent = account.full_name + ' · ' + account.email;
+  $('profileName').value = account.full_name || '';
+  $('profileEmail').value = account.email || '';
+  $('profilePhone').value = account.phone || '';
+}
+$('loginTab').onclick = () => showPanel('loginPanel');
+$('registerTab').onclick = () => showPanel('registerPanel');
+$('backToSignIn').onclick = () => showPanel('loginPanel');
+$('toggleLoginPassword').onclick = () => {
+  const visible = $('loginPassword').type === 'password';
+  $('loginPassword').type = visible ? 'text' : 'password';
+  $('toggleLoginPassword').textContent = visible ? 'Hide' : 'Show';
+  $('toggleLoginPassword').setAttribute('aria-pressed', visible ? 'true' : 'false');
+};
+$('forgotPassword').onclick = () => showPanel('resetRequestPanel');
+$('resetBackToLogin').onclick = () => showPanel('loginPanel');
+$('registerForm').onsubmit = async event => {
+  event.preventDefault();
+  const form = Object.fromEntries(new FormData(event.currentTarget).entries());
+  try {
+    const result = await request('auth_register', form);
+    $('loginIdentity').value = form.username;
+    $('loginPassword').value = '';
+    event.currentTarget.reset();
+    showPanel('loginPanel');
+    message($('loginMessage'), result.message, true);
+  } catch (error) {
+    message($('registerMessage'), error.message, false);
+  }
+};
+$('loginForm').onsubmit = async event => {
+  event.preventDefault();
+  const form = Object.fromEntries(new FormData(event.currentTarget).entries());
+  try {
+    await request('auth_login', form);
+    location.replace('index.html');
+  } catch (error) {
+    message($('loginMessage'), error.message, false);
+  }
+};
+$('resetRequestForm').onsubmit = async event => {
+  event.preventDefault();
+  try {
+    const result = await request('auth_reset_request', Object.fromEntries(new FormData(event.currentTarget).entries()));
+    message($('resetRequestMessage'), result.message, true);
+  } catch (error) {
+    message($('resetRequestMessage'), error.message, false);
+  }
+};
+$('resetPasswordForm').onsubmit = async event => {
+  event.preventDefault();
+  try {
+    const form = Object.fromEntries(new FormData(event.currentTarget).entries());
+    const result = await request('auth_reset_password', Object.assign({}, form, { token: resetToken }));
+    event.currentTarget.reset();
+    history.replaceState(null, '', 'account.html');
+    showPanel('loginPanel');
+    message($('loginMessage'), result.message, true);
+  } catch (error) {
+    message($('resetPasswordMessage'), error.message, false);
+  }
+};
+$('profileForm').onsubmit = async event => {
+  event.preventDefault();
+  try {
+    const result = await request('auth_profile_update', Object.fromEntries(new FormData(event.currentTarget).entries()));
+    showAccount(result.account);
+    message($('profileMessage'), result.message, true);
+  } catch (error) {
+    message($('profileMessage'), error.message, false);
+  }
+};
+$('changePasswordForm').onsubmit = async event => {
+  event.preventDefault();
+  try {
+    const result = await request('auth_change_password', Object.fromEntries(new FormData(event.currentTarget).entries()));
+    event.currentTarget.reset();
+    message($('passwordMessage'), result.message, true);
+  } catch (error) {
+    message($('passwordMessage'), error.message, false);
+  }
+};
+$('logoutButton').onclick = async () => {
+  try {
+    await request('auth_logout', {});
+    location.replace('account.html');
+  } catch (error) {
+    message($('sessionMessage'), error.message, false);
+  }
+};
+async function init() {
+  try {
+    csrfToken = (await request('auth_token')).csrf_token;
+    if (resetToken) {
+      showPanel('resetPasswordPanel');
+      return;
+    }
+    const result = await request('auth_me');
+    if (result.account) showAccount(result.account);
+  } catch (error) {
+    message($('loginMessage'), error.message, false);
+    message($('registerMessage'), error.message, false);
+  }
+}
+init();
+</script>
+<script src="auth-nav.js?v=nav-cleanup-20261120"></script>
+</body>
+</html>

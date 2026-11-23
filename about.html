@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>About - Medicine Scanner</title>
+  <style>
+:root{--bg:#eef3fa;--card:#fff;--ink:#12233d;--mut:#5b6b82;--line:#c9d4e4;--blue:#0b4fb3;--ok:#1c9a4a;--bad:#d62b2b;--warn:#b86e00}
+@media (prefers-color-scheme:dark){:root{--bg:#0c1420;--card:#142034;--ink:#e6edf8;--mut:#93a4bd;--line:#26364f;--blue:#5b9bff}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+
+/* navigation */
+.nav{position:sticky;top:0;z-index:5;background:var(--blue);color:#fff;display:flex;align-items:center;flex-wrap:wrap;gap:4px;padding:0 14px}
+.nav .brand{font-weight:700;margin-right:auto;padding:12px 0}
+.nav nav{display:flex;gap:4px}
+.nav a{color:#fff;opacity:.85;text-decoration:none;padding:12px 16px;font-weight:600}
+.nav a:hover{opacity:1;background:rgba(255,255,255,.15)}
+.nav a.active{opacity:1;background:var(--bg);color:var(--blue)}
+
+/* layout */
+main{max-width:480px;margin:0 auto;padding:16px}
+main.wide{max-width:900px}
+h1{font-size:1.2rem;margin:0 0 12px}
+h2{font-size:1rem;margin:18px 0 8px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px}
+label{display:block;font-size:.85rem;color:var(--mut);margin-bottom:4px}
+input[type=text]{width:100%;font:inherit;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
+.row{display:flex;gap:8px}
+button{font:inherit;font-weight:600;border:0;border-radius:8px;padding:10px 14px;cursor:pointer;background:var(--blue);color:#fff}
+button.alt{background:var(--bg);color:var(--ink);border:1px solid var(--line)}
+button.danger{background:var(--bad)}
+button:focus-visible,input:focus-visible,.nav a:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+
+/* scanner */
+.cam{position:relative;background:#000;border-radius:10px;overflow:hidden;aspect-ratio:1/1;display:none}
+.cam video{width:100%;height:100%;object-fit:cover}
+.cam .fr{position:absolute;inset:18%;border:3px solid #4cf08a;border-radius:10px}
+#msg{color:var(--mut);font-size:.9rem;margin-top:8px}
+.badge{width:60px;height:60px;border-radius:50%;margin:0 auto 6px;display:grid;place-items:center;color:#fff;font-size:1.8rem;font-weight:700}
+.res{text-align:center;display:none}
+.res dl{display:grid;grid-template-columns:auto 1fr;gap:3px 10px;text-align:left;margin:10px 0 0;font-size:.9rem}
+.res dt{color:var(--mut)}.res dd{margin:0}
+
+/* stats + tables */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:8px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px;text-align:center}
+.stat b{display:block;font-size:1.6rem}
+.stat span{font-size:.8rem;color:var(--mut)}
+.stat.ok b{color:var(--ok)}.stat.warn b{color:var(--warn)}.stat.bad b{color:var(--bad)}
+.wrap{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:10px}
+table{width:100%;border-collapse:collapse;font-size:.88rem}
+th{text-align:left;color:var(--mut);font-weight:600;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:8px 10px;border-top:1px solid var(--line)}
+.pill{display:inline-block;padding:2px 10px;border-radius:12px;color:#fff;font-size:.75rem;font-weight:700;white-space:nowrap}
+.pill.ok{background:var(--ok)}.pill.warn{background:var(--warn)}.pill.bad{background:var(--bad)}
+.empty{color:var(--mut);text-align:center;padding:14px}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+small.note{color:var(--mut)}
+
+/* about page */
+.about .card h2{margin-top:0}
+.about p{margin:6px 0}
+.about ol,.about ul{padding-left:20px;margin:6px 0}
+.about li{margin:4px 0}
+.about dl{display:grid;grid-template-columns:auto 1fr;gap:8px 12px;align-items:center;margin:6px 0}
+.about dd{margin:0}
+
+.tabs{display:flex;gap:8px;margin-bottom:12px}
+.tabs button{flex:1;background:var(--card);color:var(--ink);border:1px solid var(--line)}
+.tabs button.on{background:var(--blue);color:#fff;border-color:var(--blue)}
+.pill.gray{background:var(--mut)}
+.item{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:8px}
+.item .top{display:flex;justify-content:space-between;gap:8px;align-items:center;font-weight:600}
+.item p{margin:4px 0;font-size:.9rem;color:var(--mut)}
+.msgb{margin-top:10px;font-size:.9rem}.msgb.err{color:var(--bad)}.msgb.good{color:var(--ok)}
+.hide{display:none}
+/* AI chat */
+.chat{display:flex;flex-direction:column;height:62vh;min-height:320px}
+.chat .log{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding:4px}
+.bub{max-width:85%;padding:9px 12px;border-radius:14px;white-space:pre-wrap;font-size:.95rem}
+.bub.me{align-self:flex-end;background:var(--blue);color:#fff;border-bottom-right-radius:4px}
+.bub.ai{align-self:flex-start;background:var(--bg);border:1px solid var(--line);border-bottom-left-radius:4px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+.chips button{font-size:.8rem;padding:6px 10px}
+.chat textarea{flex:1;font:inherit;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);resize:none}
+  </style>
+</head>
+<body>
+
+<header class="nav">
+  <span class="brand">💊 Medicine Scanner</span>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="about.html" class="active">About</a>
+    <a href="chatbot.html">Chatbot</a>
+    <a href="report.html">Report</a>
+    <a href="account.html">My Profile</a>
+  </nav>
+</header>
+
+<main id="main">
+
+<!-- ===================== ABOUT PAGE ===================== -->
+  <section id="viewAbout" class="about">
+    <h1>About</h1>
+
+    <div class="card">
+      <h2>What is Medicine Scanner?</h2>
+      <p>Medicine Scanner helps you verify a medicine. Scan the QR code on the package (or type its code) and the system tells you if the medicine is verified, expired, or not found in the database.</p>
+    </div>
+
+    <div class="card">
+      <h2>How it works</h2>
+      <ol>
+        <li>Open the <b>Home</b> page and enter the ESP32 IP address shown on its LCD.</li>
+        <li>Open the camera and scan the medicine's QR code, or type the code manually.</li>
+        <li>The web page sends the code to the ESP32.</li>
+        <li>The ESP32 sends the code to the PHP medicine catalog, then shows the result on its LCD, LEDs and buzzer.</li>
+        <li>The result also appears on this page and is saved in the <b>Report</b>.</li>
+        <li>The Home dashboard reads the ESP32 status endpoint and shows its reported GPIO output levels. The circuit has no current sensor, so these readings do not confirm that an LED or buzzer is physically operating.</li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <h2>What the results mean</h2>
+      <dl>
+        <dt><span class="pill ok">Verified</span></dt><dd>The medicine was found in the database and is not expired.</dd>
+        <dt><span class="pill warn">Expired</span></dt><dd>The medicine is listed in the database, but its expiry date has passed. Do not use it.</dd>
+        <dt><span class="pill bad">Not verified</span></dt><dd>The code was not found in the database. The medicine may be counterfeit.</dd>
+      </dl>
+    </div>
+
+    <div class="card">
+      <h2>Hardware used</h2>
+      <ul>
+        <li>ESP32 microcontroller (Wi-Fi)</li>
+        <li>16x2 I2C LCD display</li>
+        <li>Green LED on GPIO 25 (three flashes for verified medicine)</li>
+        <li>Red LED on GPIO 26 and active buzzer on GPIO 27 (three synchronized flashes/beeps for expired medicine; two for not found)</li>
+        <li>Use one 220-ohm resistor for each LED and connect all component grounds to ESP32 GND. Use a transistor driver if your buzzer needs more current than a GPIO can supply.</li>
+        <li>The buzzer stays off for verified medicine.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>Supported QR code formats</h2>
+      <ul>
+        <li>A plain code, for example <code>MED001</code></li>
+        <li>A code with a batch, for example <code>MED001|P0012026</code></li>
+        <li>A link containing the code, for example <code>https://example.com/?code=MED001</code></li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>Health Assistant</h2>
+      <p>Open the <b>Chatbot</b> page to ask general health and medicine questions. It can use your saved profile to personalize its answers, but it does not diagnose conditions or replace a healthcare professional.</p>
+    </div>
+
+    <div class="card">
+      <h2>Your data</h2>
+      <p>Your medicine scans and profile are stored in the system database. You can review scan history and download a report from the <b>Report</b> page.</p>
+    </div>
+
+    <div class="actions">
+      <button onclick="location.href='index.html'">Start scanning</button>
+      <button class="alt" onclick="location.href='report.html'">View report</button>
+    </div>
+  </section>
+</main>
+
+<script>
+// About page: static content, no scripts needed.
+</script>
+<script src="auth-nav.js?v=nav-cleanup-20261120"></script>
+</body>
+</html>

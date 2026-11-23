@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Chatbot - Medicine Scanner</title>
+  <style>
+:root{--bg:#eef3fa;--card:#fff;--ink:#12233d;--mut:#5b6b82;--line:#c9d4e4;--blue:#0b4fb3;--ok:#1c9a4a;--bad:#d62b2b;--warn:#b86e00}
+@media (prefers-color-scheme:dark){:root{--bg:#0c1420;--card:#142034;--ink:#e6edf8;--mut:#93a4bd;--line:#26364f;--blue:#5b9bff}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+
+/* navigation */
+.nav{position:sticky;top:0;z-index:5;background:var(--blue);color:#fff;display:flex;align-items:center;flex-wrap:wrap;gap:4px;padding:0 14px}
+.nav .brand{font-weight:700;margin-right:auto;padding:12px 0}
+.nav nav{display:flex;gap:4px}
+.nav a{color:#fff;opacity:.85;text-decoration:none;padding:12px 16px;font-weight:600}
+.nav a:hover{opacity:1;background:rgba(255,255,255,.15)}
+.nav a.active{opacity:1;background:var(--bg);color:var(--blue)}
+
+/* layout */
+main{max-width:480px;margin:0 auto;padding:16px}
+main.wide{max-width:900px}
+h1{font-size:1.2rem;margin:0 0 12px}
+h2{font-size:1rem;margin:18px 0 8px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px}
+label{display:block;font-size:.85rem;color:var(--mut);margin-bottom:4px}
+input[type=text]{width:100%;font:inherit;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
+.row{display:flex;gap:8px}
+button{font:inherit;font-weight:600;border:0;border-radius:8px;padding:10px 14px;cursor:pointer;background:var(--blue);color:#fff}
+button.alt{background:var(--bg);color:var(--ink);border:1px solid var(--line)}
+button.danger{background:var(--bad)}
+button:focus-visible,input:focus-visible,.nav a:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+
+/* scanner */
+.cam{position:relative;background:#000;border-radius:10px;overflow:hidden;aspect-ratio:1/1;display:none}
+.cam video{width:100%;height:100%;object-fit:cover}
+.cam .fr{position:absolute;inset:18%;border:3px solid #4cf08a;border-radius:10px}
+#msg{color:var(--mut);font-size:.9rem;margin-top:8px}
+.badge{width:60px;height:60px;border-radius:50%;margin:0 auto 6px;display:grid;place-items:center;color:#fff;font-size:1.8rem;font-weight:700}
+.res{text-align:center;display:none}
+.res dl{display:grid;grid-template-columns:auto 1fr;gap:3px 10px;text-align:left;margin:10px 0 0;font-size:.9rem}
+.res dt{color:var(--mut)}.res dd{margin:0}
+
+/* stats + tables */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:8px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px;text-align:center}
+.stat b{display:block;font-size:1.6rem}
+.stat span{font-size:.8rem;color:var(--mut)}
+.stat.ok b{color:var(--ok)}.stat.warn b{color:var(--warn)}.stat.bad b{color:var(--bad)}
+.wrap{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:10px}
+table{width:100%;border-collapse:collapse;font-size:.88rem}
+th{text-align:left;color:var(--mut);font-weight:600;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:8px 10px;border-top:1px solid var(--line)}
+.pill{display:inline-block;padding:2px 10px;border-radius:12px;color:#fff;font-size:.75rem;font-weight:700;white-space:nowrap}
+.pill.ok{background:var(--ok)}.pill.warn{background:var(--warn)}.pill.bad{background:var(--bad)}
+.empty{color:var(--mut);text-align:center;padding:14px}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+small.note{color:var(--mut)}
+
+/* about page */
+.about .card h2{margin-top:0}
+.about p{margin:6px 0}
+.about ol,.about ul{padding-left:20px;margin:6px 0}
+.about li{margin:4px 0}
+.about dl{display:grid;grid-template-columns:auto 1fr;gap:8px 12px;align-items:center;margin:6px 0}
+.about dd{margin:0}
+
+/* chat form */
+.chat-page label{margin:10px 0 4px}
+.chat-page input,.chat-page select,.chat-page textarea{width:100%;font:inherit;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
+.chat-page .row>*{flex:1}
+.chat-page h2{margin-top:0}
+.chat-page button.ok{background:var(--ok)}
+.chat-page select:focus-visible,.chat-page textarea:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.tabs{display:flex;gap:8px;margin-bottom:12px}
+.tabs button{flex:1;background:var(--card);color:var(--ink);border:1px solid var(--line)}
+.tabs button.on{background:var(--blue);color:#fff;border-color:var(--blue)}
+.pill.gray{background:var(--mut)}
+.item{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:8px}
+.item .top{display:flex;justify-content:space-between;gap:8px;align-items:center;font-weight:600}
+.item p{margin:4px 0;font-size:.9rem;color:var(--mut)}
+.msgb{margin-top:10px;font-size:.9rem}.msgb.err{color:var(--bad)}.msgb.good{color:var(--ok)}
+.hide{display:none}
+/* AI chat */
+.chat{display:flex;flex-direction:column;height:62vh;min-height:320px}
+.chat .log{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding:4px}
+.bub{max-width:85%;padding:9px 12px;border-radius:14px;white-space:pre-wrap;font-size:.95rem}
+.bub.me{align-self:flex-end;background:var(--blue);color:#fff;border-bottom-right-radius:4px}
+.bub.ai{align-self:flex-start;background:var(--bg);border:1px solid var(--line);border-bottom-left-radius:4px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+.chips button{font-size:.8rem;padding:6px 10px}
+.chat textarea{flex:1;font:inherit;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);resize:none}
+.src{font-size:.78rem;color:var(--mut);margin-top:6px}.fb{margin-top:6px}.fb button{padding:2px 8px;font-size:.8rem}
+.wiki-status{min-height:1.2em;margin:0 0 8px;color:var(--mut);font-size:.8rem}
+.wiki-status.loading:before{content:"";display:inline-block;width:11px;height:11px;margin-right:7px;border:2px solid var(--line);border-top-color:var(--blue);border-radius:50%;vertical-align:-2px;animation:wiki-spin .8s linear infinite}
+@keyframes wiki-spin{to{transform:rotate(360deg)}}
+.sources{margin-top:8px;padding-top:6px;border-top:1px solid var(--line);font-size:.82rem}
+.sources ul{margin:4px 0 0;padding-left:18px}
+.sources a{color:var(--blue);overflow-wrap:anywhere}
+.sources .description{display:block;color:var(--mut);font-size:.75rem}
+details.card summary{cursor:pointer}.chat-page input[type=checkbox]{width:auto}#aiStat{font-size:.85rem;white-space:pre-line}
+  </style>
+</head>
+<body>
+
+<header class="nav">
+  <span class="brand">💊 Medicine Scanner</span>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="about.html">About</a>
+    <a href="chatbot.html" class="active">Chatbot</a>
+    <a href="report.html">Report</a>
+    <a href="account.html">My Profile</a>
+  </nav>
+</header>
+
+<main id="main">
+
+  <section id="viewChat" class="chat-page">
+    <h1>🤖 Health Assistant</h1>
+
+    <div class="card row" style="align-items:center;justify-content:space-between">
+      <span id="aiStat">Checking chatbot connection...</span>
+      <button class="alt" id="aiTest" style="flex:0 0 auto">Check connection</button>
+    </div>
+
+    <details class="card">
+      <summary><b>About you</b> <small class="note">(helps the assistant answer you personally)</small></summary>
+      <label for="pfName">Your name</label><input id="pfName" type="text" maxlength="80">
+      <label for="pfAge">Age</label><input id="pfAge" type="text" inputmode="numeric" maxlength="3">
+      <label for="pfAll">Allergies / health conditions</label><input id="pfAll" type="text" maxlength="300" placeholder="e.g. penicillin allergy, asthma">
+      <label for="pfMed">Medicines you take now</label><input id="pfMed" type="text" maxlength="300" placeholder="e.g. Paracetamol 500mg twice a day">
+      <div class="actions"><button id="pfSave">Save</button></div>
+      <div class="msgb" id="pfMsg" aria-live="polite"></div>
+    </details>
+
+    <div class="card chat">
+      <div class="log" id="chatLog" aria-live="polite"></div>
+      <div class="chips" id="chips">
+        <button class="alt" data-q="I have a headache and feel tired. What should I do?">I feel unwell</button>
+        <button class="alt" data-q="How should I take my medicine correctly?">How to take my medicine</button>
+      </div>
+      <label style="margin:0 0 6px"><input type="checkbox" id="useWiki" checked> Use Wikipedia for general knowledge</label>
+      <small class="note">When enabled, your question is sent to Wikipedia to find articles. Avoid including personal details.</small>
+      <div id="wikiStatus" class="wiki-status" role="status" aria-live="polite"></div>
+      <div class="row"><textarea id="chatIn" rows="2" maxlength="600" placeholder="Tell the assistant how you feel..."></textarea><button id="chatSend" style="flex:0 0 auto">Send</button></div>
+    </div>
+    <small class="note">This chatbot gives general guidance only and does not replace a healthcare professional. In an emergency go to the nearest hospital immediately.</small>
+
+    <details class="card" style="margin-top:12px">
+      <summary><b>Training mode</b> <small class="note">(admin only)</small></summary>
+      <p class="note" style="margin:8px 0">Teach the chatbot approved answers. It uses them first when a patient asks something similar.</p>
+      <div class="actions" style="margin-top:0"><button class="alt" id="kbOpen">Unlock training mode</button></div>
+      <div id="kbBox" class="hide">
+        <label for="kbQ">Question or topic</label><input id="kbQ" type="text" maxlength="300" placeholder="e.g. Can I take paracetamol on an empty stomach?">
+        <label for="kbA">Approved answer</label><textarea id="kbA" rows="3" maxlength="1500"></textarea>
+        <div class="actions"><button id="kbAdd">Add chatbot knowledge</button></div>
+        <div class="msgb" id="kbMsg" aria-live="polite"></div>
+        <h2>Saved answers</h2><div id="kbList"></div>
+        <h2>Answers rated 👎 (review and fix)</h2><div id="kbRev"></div>
+      </div>
+    </details>
+  </section>
+
+</main>
+
+<script>
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+function say(el, text, good) { el.textContent = text; el.className = 'msgb ' + (good ? 'good' : 'err'); }
+function setWikiStatus(text, loading) {
+  const el = $('wikiStatus');
+  el.textContent = text;
+  el.classList.toggle('loading', !!loading);
+}
+function renderSources(bubble, sources) {
+  const valid = (Array.isArray(sources) ? sources : []).filter(source => {
+    try {
+      const url = new URL(source.url);
+      return url.protocol === 'https:' && url.hostname === 'en.wikipedia.org';
+    } catch (e) { return false; }
+  });
+  if (!valid.length) return;
+  const section = document.createElement('div');
+  section.className = 'sources';
+  const heading = document.createElement('strong');
+  heading.textContent = 'Wikipedia sources';
+  const list = document.createElement('ul');
+  section.appendChild(heading);
+  section.appendChild(list);
+  valid.forEach(source => {
+    const item = document.createElement('li');
+    const link = document.createElement('a');
+    link.href = source.url;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    link.textContent = (source.ref ? '[' + source.ref + '] ' : '') + (source.title || 'Wikipedia article');
+    item.appendChild(link);
+    if (source.description) {
+      const description = document.createElement('span');
+      description.className = 'description';
+      description.textContent = source.description;
+      item.appendChild(description);
+    }
+    list.appendChild(item);
+  });
+  bubble.appendChild(section);
+}
+
+async function api(action, body, query) {
+  let r;
+  try { r = await fetch('api.php?action=' + action + (query || ''), body ? { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) } : { cache: 'no-store' }); }
+  catch (e) { throw new Error('Cannot reach api.php. Open this site through a PHP server (for example http://localhost/...), not by double-clicking the file.'); }
+  let d; try { d = await r.json(); }
+  catch (e) { throw new Error('api.php did not return JSON. PHP is probably not running here (the file is shown as plain text) or api.php has an error.'); }
+  if (!d.ok) throw new Error(d.error || 'Request failed');
+  return d;
+}
+
+// ---------- AI connection status ----------
+const setStat = (ok, t) => { $('aiStat').textContent = (ok ? '🟢 ' : '🔴 ') + t; };
+async function aiStatus(test) {
+  $('aiStat').textContent = test ? 'Testing PHP, chatbot provider, and Wikipedia...' : 'Checking PHP backend...';
+  try {
+    const d = await api('ai_status', null, test ? '&test=1' : '');
+    const lines = ['PHP Backend: ' + (d.backend ? 'Working' : 'Unavailable')];
+    if (test) {
+      lines.push('Chatbot API: ' + (d.ai.connected
+        ? 'Connected (' + d.ai.provider + ')'
+        : 'Failed - ' + (d.ai.error || 'No provider connection.')));
+      const wiki = d.wikipedia || {};
+      lines.push('Wikipedia: ' + (wiki.ok ? 'Connected' : 'Failed - ' + (wiki.error || wiki.status || 'Unknown error')));
+      lines.push('PHP cURL: ' + (d.curl ? 'Enabled' : 'Disabled'));
+      lines.push('Approved answers: ' + d.knowledge);
+      setStat(!!(d.backend && d.ai.connected && wiki.ok && d.curl), lines.join('\n'));
+    } else {
+      const configured = d.providers.filter(p => p.configured).map(p => p.name);
+      lines.push('Chatbot API: ' + (configured.length
+        ? 'Key configured for ' + configured.join(', ') + '; click Check connection to test it.'
+        : 'No key configured. Set ANTHROPIC_API_KEY, OPENAI_API_KEY, or GEMINI_API_KEY on the PHP server.'));
+      lines.push('Wikipedia: Not tested yet; click Check connection.');
+      lines.push('PHP cURL: ' + (d.curl ? 'Enabled' : 'Disabled'));
+      setStat(!!(d.backend && configured.length && d.curl), lines.join('\n'));
+    }
+  } catch (e) {
+    setStat(false, 'PHP Backend: Failed - ' + e.message + '\nChatbot API: Not tested\nWikipedia: Not tested');
+  }
+}
+$('aiTest').onclick = () => aiStatus(true);
+
+// ---------- About you (profile) ----------
+async function loadProfile() {
+  try {
+    const p = (await api('profile_get')).profile;
+    if (p) { $('pfName').value = p.name || ''; $('pfAge').value = p.age || ''; $('pfAll').value = p.allergies || ''; $('pfMed').value = p.medicines || ''; }
+  } catch (e) { try { const p = JSON.parse(localStorage.getItem('ms_profile') || 'null'); if (p) { $('pfName').value = p.name || ''; $('pfAge').value = p.age || ''; $('pfAll').value = p.allergies || ''; $('pfMed').value = p.medicines || ''; } } catch (er) {} }
+}
+$('pfSave').onclick = async () => {
+  const prof = { name: $('pfName').value.trim(), age: $('pfAge').value.trim(), allergies: $('pfAll').value.trim(), medicines: $('pfMed').value.trim() };
+  try { await api('profile_save', prof); say($('pfMsg'), 'Saved. The assistant will now answer you personally.', true); }
+  catch (e) { try { localStorage.setItem('ms_profile', JSON.stringify(prof)); } catch (er) {} say($('pfMsg'), 'Saved in this browser (no server found).', true); }
+};
+
+// ---------- Chat ----------
+const chatHist = [];
+function addBub(t, who) { const d = document.createElement('div'); d.className = 'bub ' + who; d.textContent = t; $('chatLog').appendChild(d); $('chatLog').scrollTop = 1e9; return d; }
+function localLog(action, details) { try { const a = JSON.parse(localStorage.getItem('ms_activity') || '[]'); a.unshift({ t: Date.now(), actor: 'patient', action: action, details: details || '' }); localStorage.setItem('ms_activity', JSON.stringify(a.slice(0, 300))); } catch (e) {} }
+function localReply(q) {   // basic offline answers if the AI cannot be reached
+  let nm = ''; try { nm = ((JSON.parse(localStorage.getItem('ms_profile') || '{}').name) || '').split(' ')[0]; } catch (e) {}
+  return (nm ? 'Hello ' + nm + ', ' : '') + baseReply(q);
+}
+function baseReply(q) {
+  q = q.toLowerCase();
+  if (/chest pain|breath|faint|unconscious|bleeding|suicide/.test(q)) return 'This may be an emergency. Please go to the nearest hospital or call emergency services now.';
+  if (/headache|fever|pain|cough|tired|dizzy/.test(q)) return 'I am sorry you feel unwell. Rest, drink water if appropriate, and watch your symptoms. Contact a healthcare professional if symptoms worsen or concern you.';
+  if (/medicine|tablet|dose|take/.test(q)) return 'Follow the instructions from your healthcare professional and the medicine label; do not guess a dose. You can scan the package on the Home page to check whether it is listed and not expired.';
+  return 'Please tell me more about how you feel, or ask a question about your medicine.';
+}
+async function sendChat(text) {
+  text = (text || '').trim(); if (!text) return;
+  $('chatIn').value = ''; $('chips').style.display = 'none'; $('chatSend').disabled = true;
+  addBub(text, 'me'); chatHist.push({ role: 'user', content: text });
+  const useWiki = $('useWiki').checked;
+  const w = addBub(useWiki ? 'Searching Wikipedia and preparing an answer...' : 'Preparing an answer...', 'ai');
+  let reply, bad = '', sources = [];
+  if (useWiki) setWikiStatus('Searching Wikipedia...', true);
+  else setWikiStatus('Wikipedia lookup is off for this question.', false);
+  try {
+    const d = await api('chat', { messages: chatHist.slice(-12), wiki: useWiki });
+    reply = d.reply;
+    sources = d.sources || [];
+    const wiki = d.wiki || { status: useWiki ? 'unavailable' : 'disabled', count: 0 };
+    if (wiki.status === 'ok') {
+      setWikiStatus(wiki.count + ' Wikipedia article(s) found.' + ((d.sources || []).length ? ' Sources are listed with the answer.' : ' The assistant did not cite a source.'), false);
+    } else if (wiki.status === 'none' || wiki.status === 'empty') {
+      setWikiStatus('No relevant Wikipedia article was found. The assistant answered without Wikipedia.', false);
+    } else if (wiki.status === 'unavailable') {
+      setWikiStatus('Wikipedia is temporarily unavailable: ' + (wiki.error || 'Unknown connection error') + ' The assistant answered without Wikipedia.', false);
+    } else if (wiki.status === 'rate_limited') {
+      setWikiStatus((wiki.error || 'Please wait a moment before searching Wikipedia again.') + ' The assistant answered without it.', false);
+    } else if (wiki.status === 'invalid') {
+      setWikiStatus(wiki.error || 'Enter a valid question.', false);
+    }
+  } catch (e) {
+    reply = localReply(text); bad = e.message;
+    if (useWiki) setWikiStatus('The chat request failed; Wikipedia source status is unavailable.', false);
+    localLog('AI_CHAT', text.slice(0, 120) + ' [offline]');
+  }
+  w.textContent = reply;
+  if (bad) {
+    chatHist.pop();
+    w.insertAdjacentHTML('beforeend', '<div class="src">⚠ Chatbot service not connected: ' + esc(bad) + '</div>');
+    setStat(false, bad);
+  } else {
+    renderSources(w, sources);
+    chatHist.push({ role: 'assistant', content: reply }); w.dataset.q = text; w.dataset.a = reply;
+    w.insertAdjacentHTML('beforeend', '<div class="fb"><button class="alt" data-r="1" aria-label="Good answer">👍</button> <button class="alt" data-r="-1" aria-label="Bad answer">👎</button></div>');
+  }
+  $('chatSend').disabled = false; $('chatLog').scrollTop = 1e9;
+}
+addBub('Hello! I am your health assistant. Ask about your medicine or tell me how you feel. Filling in "About you" above helps me answer you personally.', 'ai');
+$('chatSend').onclick = () => sendChat($('chatIn').value);
+$('chatIn').onkeydown = e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat($('chatIn').value); } };
+$('chips').onclick = e => { if (e.target.dataset.q) sendChat(e.target.dataset.q); };
+$('chatLog').onclick = async e => {
+  const r = e.target.dataset.r; if (!r) return;
+  const b = e.target.closest('.bub'), box = e.target.closest('.fb');
+  try { await api('feedback', { rating: +r, message: (b.dataset.q || '') + ' || ' + (b.dataset.a || '') }); box.textContent = 'Thanks for your feedback.'; } catch (er) { box.textContent = er.message; }
+};
+
+// ---------- Training mode (admin) ----------
+let adminKey = '';
+async function loadKb() {
+  const d = await api('kb_list', { key: adminKey });
+  $('kbList').innerHTML = d.items.length ? d.items.map(x => '<div class="item"><div class="top"><span>' + esc(x.question) + '</span><button class="alt" data-del="' + x.id + '">Delete</button></div><p>' + esc(x.answer) + '</p></div>').join('') : '<div class="empty">No trained answers yet.</div>';
+  $('kbRev').innerHTML = d.review.length ? d.review.map(x => { const p = x.message.split(' || '); return '<div class="item"><p><b>Q:</b> ' + esc(p[0]) + '</p><p><b>Chatbot:</b> ' + esc(p.slice(1).join(' || ')) + '</p><button class="alt" data-fix="' + esc(p[0]) + '">Write a better answer</button></div>'; }).join('') : '<div class="empty">Nothing to review.</div>';
+}
+$('kbOpen').onclick = async () => {
+  const k = prompt('Enter the admin key:'); if (!k) return;
+  adminKey = k;
+  try { await loadKb(); $('kbBox').classList.remove('hide'); } catch (e) { adminKey = ''; alert(e.message); }
+};
+$('kbAdd').onclick = async () => {
+  try { await api('kb_add', { key: adminKey, question: $('kbQ').value, answer: $('kbA').value }); $('kbQ').value = $('kbA').value = ''; say($('kbMsg'), 'Added. The chatbot will use this answer from now on.', true); loadKb(); }
+  catch (e) { say($('kbMsg'), e.message); }
+};
+$('kbBox').onclick = async e => {
+  if (e.target.dataset.del && confirm('Delete this answer?')) { try { await api('kb_delete', { key: adminKey, id: +e.target.dataset.del }); loadKb(); } catch (er) { alert(er.message); } }
+  if (e.target.dataset.fix !== undefined) { $('kbQ').value = e.target.dataset.fix; $('kbA').focus(); }
+};
+
+loadProfile(); aiStatus(false);
+</script>
+<script src="auth-nav.js?v=nav-cleanup-20261120"></script>
+</body>
+</html>

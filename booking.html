@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b4f68">
+  <title>Appointments - Medicine Scanner</title>
+  <style>
+:root{color-scheme:light;--bg:#f2f7f8;--card:#fff;--ink:#16313b;--muted:#607982;--line:#d7e4e6;--teal:#087f8c;--teal-dark:#075d69;--mint:#e7f5f2;--red:#b42335;--amber:#9a6400;--shadow:0 12px 34px #143d4810}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse at 10% 0,#e1f3f1 0,transparent 35%),var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.nav{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:12px;padding:8px clamp(14px,4vw,48px);background:#083b4b;color:#fff;box-shadow:0 3px 14px #062d3a30}
+.brand{font-weight:750;margin-right:auto;white-space:nowrap}.nav nav{display:flex;flex-wrap:wrap;gap:4px}.nav a{color:#fff;text-decoration:none;padding:9px 12px;border-radius:8px;font-weight:600}.nav a:hover,.nav a.active{background:#ffffff24}
+main{width:min(1120px,100% - 32px);margin:30px auto 70px}
+.hero{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin:10px 0 24px}.eyebrow{color:var(--teal);font-size:.77rem;letter-spacing:.13em;text-transform:uppercase;font-weight:800}.hero h1{font-size:clamp(2rem,4vw,3rem);line-height:1.08;letter-spacing:-.04em;margin:4px 0 8px}.hero p{color:var(--muted);max-width:660px;margin:0}.hero-mark{display:grid;place-items:center;flex:0 0 74px;height:74px;border-radius:22px;background:var(--mint);color:var(--teal);font-size:2rem}
+.layout{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(290px,.7fr);gap:18px;align-items:start}.stack{display:grid;gap:18px}.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:clamp(17px,3vw,25px);box-shadow:var(--shadow)}.card h2{font-size:1.15rem;margin:0 0 5px}.sub{color:var(--muted);font-size:.91rem;margin:0 0 16px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.field{min-width:0}.field.full{grid-column:1/-1}label{display:block;color:#405c65;font-size:.86rem;font-weight:700;margin:0 0 5px}
+input,select,textarea{width:100%;font:inherit;color:var(--ink);background:#fff;border:1px solid #c9dade;border-radius:9px;padding:10px 12px}textarea{min-height:84px;resize:vertical}input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible,a:focus-visible{outline:3px solid #55bec4;outline-offset:2px}input[type=checkbox]{width:auto;accent-color:var(--teal)}
+button{font:inherit;font-weight:750;color:#fff;background:var(--teal);border:0;border-radius:9px;padding:10px 15px;cursor:pointer}button:hover{background:var(--teal-dark)}button:disabled{opacity:.55;cursor:not-allowed}.secondary{background:#edf4f5;color:#244650;border:1px solid var(--line)}.secondary:hover{background:#e3edef}.danger{background:#b42335}.danger:hover{background:#8c1d2b}.small{padding:7px 10px;font-size:.86rem}.actions{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-top:15px}
+.notice{min-height:1.5em;margin:11px 0 0;color:var(--muted);font-size:.91rem}.notice.good{color:#167244}.notice.error{color:var(--red)}.hint{color:var(--muted);font-size:.82rem;margin:6px 0 0}.recommendation{padding:10px 12px;border-radius:9px;background:#fff7e6;color:#805400;font-size:.89rem}
+.doctor-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(225px,1fr));gap:12px}.doctor{border:1px solid var(--line);border-radius:13px;padding:14px;display:grid;grid-template-columns:54px minmax(0,1fr);gap:11px;align-items:start;background:#fff}.avatar{width:54px;height:54px;border-radius:50%;display:grid;place-items:center;overflow:hidden;background:var(--mint);color:var(--teal);font-weight:800;font-size:1.1rem}.avatar img{width:100%;height:100%;object-fit:cover}.doctor h3{margin:1px 0 2px;font-size:1rem}.doctor p{margin:2px 0;color:var(--muted);font-size:.86rem}.doctor .select-doctor{grid-column:1/-1;width:100%}.doctor-meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px}
+.tag{display:inline-flex;align-items:center;border-radius:20px;padding:3px 9px;background:#edf4f5;color:#49636b;font-size:.74rem;font-weight:750}.tag.available{background:#e8f6ec;color:#247445}.tag.unavailable{background:#fff2df;color:#895b00}
+.empty{padding:18px;text-align:center;color:var(--muted);background:#f7fafb;border:1px dashed var(--line);border-radius:12px}.list{display:grid;gap:10px}.booking{border:1px solid var(--line);border-radius:12px;padding:14px}.booking-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.booking h3{margin:0 0 3px;font-size:.98rem}.booking p{margin:4px 0;color:var(--muted);font-size:.88rem}.status{border-radius:99px;padding:4px 9px;font-size:.72rem;font-weight:850;white-space:nowrap}.status-PENDING{background:#fff3d4;color:#805500}.status-ACCEPTED,.status-COMPLETED{background:#e4f6e9;color:#17693a}.status-REJECTED,.status-CANCELLED{background:#fde8e8;color:#a21c2c}.status-REDIRECTED{background:#e9eaff;color:#4547a6}.details{font-size:.86rem;color:#435e66;overflow-wrap:anywhere}.notification{border-left:3px solid var(--teal);background:#f3f9f9;padding:9px 11px;border-radius:0 8px 8px 0;font-size:.87rem}.notification.read{opacity:.65}.notification time{display:block;color:var(--muted);font-size:.75rem;margin-top:3px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 14px}.tabs button{background:#edf4f5;color:#35535d;border:1px solid var(--line)}.tabs button.active{background:var(--teal);color:white;border-color:var(--teal)}.hidden{display:none!important}
+.schedule{display:grid;gap:8px}.day-row{display:grid;grid-template-columns:minmax(115px,1fr) 1fr 1fr;gap:9px;align-items:center;padding:8px 0;border-bottom:1px solid #edf2f3}.day-label{display:flex;align-items:center;gap:7px;font-size:.88rem;font-weight:650}.day-row input[type=time]{padding:7px 8px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(115px,1fr));gap:10px;margin-bottom:14px}.stat{padding:13px;border:1px solid var(--line);border-radius:12px;background:#f8fbfb}.stat b{display:block;font-size:1.45rem}.stat span{color:var(--muted);font-size:.79rem}
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:10px}table{width:100%;border-collapse:collapse;font-size:.84rem}th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}th{white-space:nowrap;color:var(--muted);background:#f7fafb}.admin-doctor{display:flex;justify-content:space-between;align-items:center;gap:10px;border-bottom:1px solid #edf2f3;padding:10px 0}.admin-doctor:last-child{border:0}.admin-doctor p{margin:1px 0;color:var(--muted);font-size:.83rem}
+.footer-note{margin-top:20px;text-align:center;color:var(--muted);font-size:.79rem}
+@media(max-width:820px){.layout{grid-template-columns:1fr}.hero{align-items:flex-start}.hero-mark{flex-basis:58px;height:58px;border-radius:17px}}
+@media(max-width:600px){.nav{align-items:flex-start;flex-direction:column}.nav nav{width:100%;justify-content:center}.nav a{padding:8px}.hero-mark{display:none}.grid{grid-template-columns:1fr}.field.full{grid-column:auto}.doctor-grid{grid-template-columns:1fr}.day-row{grid-template-columns:1fr 1fr}.day-label{grid-column:1/-1}.booking-top{align-items:flex-start}}
+  </style>
+</head>
+<body>
+<header class="nav">
+  <span class="brand">Medicine Scanner</span>
+  <nav aria-label="Main navigation"><a href="index.html">Home</a><a href="about.html">About</a><a href="chatbot.html">Chatbot</a><a href="report.html">Report</a><a href="booking.html" class="active">Appointments</a><a href="account.html">My Profile</a></nav>
+</header>
+<main>
+  <section class="hero">
+    <div><div class="eyebrow">Care, made easier</div><h1>Doctor appointments</h1><p>Find a specialist, request a convenient time, and follow every update from your appointment dashboard.</p></div>
+    <div style="display:flex;align-items:center;gap:12px"><button type="button" class="secondary" id="showAdmin">Admin access</button><div class="hero-mark" aria-hidden="true">✚</div></div>
+  </section>
+
+  <div class="layout" id="patientWorkspace">
+    <div class="stack">
+      <section class="card" id="doctorDirectory">
+        <h2>Find a doctor</h2><p class="sub">Browse profiles and select a doctor to start your request.</p>
+        <div class="grid" style="margin-bottom:14px">
+          <div class="field"><label for="doctorSearch">Search by name or specialty</label><input id="doctorSearch" type="search" placeholder="e.g. skin, Dr. Alice"></div>
+          <div class="field"><label for="specialtyFilter">Filter specialty</label><select id="specialtyFilter"><option value="">All specialties</option></select></div>
+        </div>
+        <div id="doctorCards" class="doctor-grid"><div class="empty">Loading doctor profiles…</div></div>
+      </section>
+
+      <section class="card" id="bookingPanel">
+        <h2>Request an appointment</h2><p class="sub">Your request is pending until the doctor reviews and responds.</p>
+        <form id="bookingForm">
+          <div class="grid">
+            <div class="field"><label for="patientName">Full name</label><input id="patientName" name="patient_name" autocomplete="name" minlength="2" maxlength="80" required></div>
+            <div class="field"><label for="patientEmail">Email address</label><input id="patientEmail" name="patient_email" type="email" autocomplete="email" maxlength="254" required></div>
+            <div class="field"><label for="patientPhone">Phone number</label><input id="patientPhone" name="patient_phone" type="tel" autocomplete="tel" maxlength="24" required></div>
+            <div class="field"><label for="condition">Condition or concern</label><select id="condition" name="condition">
+              <option value="">Choose a concern (optional)</option><option value="Heart concern">Heart or chest concern</option><option value="Skin concern">Skin concern</option><option value="Eye concern">Eye or vision concern</option><option value="Child health">Child's health</option><option value="Bone or joint concern">Bone or joint concern</option><option value="Pregnancy or women's health">Pregnancy or women's health</option><option value="Mental health concern">Mental health concern</option><option value="Dental concern">Dental concern</option><option value="General illness">General illness</option>
+            </select></div>
+            <div class="field"><label for="specialty">Medical department</label><select id="specialty" name="specialty_id" required><option value="">Choose a specialty</option></select></div>
+            <div class="field"><label for="doctorSelect">Preferred doctor</label><select id="doctorSelect" name="doctor_id" required><option value="">Choose a doctor</option></select></div>
+            <div class="field"><label for="appointmentDate">Preferred date</label><input id="appointmentDate" name="appointment_date" type="date" required></div>
+            <div class="field"><label for="appointmentTime">Available time</label><select id="appointmentTime" name="appointment_time" required disabled><option value="">Choose a date and doctor first</option></select></div>
+            <div class="field full"><label for="symptoms">Describe your symptoms or medical condition</label><textarea id="symptoms" name="symptoms" minlength="3" maxlength="1200" placeholder="Share the main concern you would like to discuss." required></textarea><p id="specialtyHint" class="hint"></p></div>
+            <div class="field full"><label for="additionalInfo">Additional health information (optional)</label><textarea id="additionalInfo" name="additional_info" maxlength="1500" placeholder="Relevant medical history, allergies, or other information for the doctor."></textarea></div>
+          </div>
+          <div class="actions"><button type="submit" id="submitBooking">Submit appointment request</button></div>
+          <div id="bookingMessage" class="notice" role="status" aria-live="polite"></div>
+        </form>
+      </section>
+
+      <section class="card"><h2>Your booking history</h2><p class="sub">View current status and any doctor recommendations.</p><div id="patientBookings" class="list"><div class="empty">Loading your appointments…</div></div></section>
+    </div>
+
+    <aside class="stack">
+      <section class="card"><div class="booking-top"><div><h2>Notifications</h2><p class="sub" style="margin-bottom:12px">Appointment updates and reminders.</p></div><button id="markNotificationsRead" class="secondary small" type="button">Mark read</button></div><div id="notifications" class="list"><div class="empty">Loading notifications…</div></div></section>
+      <section class="card"><h2>How booking works</h2><p class="sub">Choose a specialist and request an open appointment time. The doctor will confirm or decline your request. If they decline, you can review an available alternative before anything is transferred.</p><div class="recommendation">An alternative doctor is never booked without your approval.</div></section>
+      <section class="card"><h2>Doctor or admin?</h2><p class="sub">Doctor appointment management appears when you sign in with a doctor account. Administrators can unlock management tools with the server-configured admin key.</p><a href="account.html">Manage account</a></section>
+    </aside>
+  </div>
+
+  <section id="doctorWorkspace" class="hidden">
+    <div class="layout">
+      <div class="stack">
+        <section class="card"><h2>Incoming appointment requests</h2><p class="sub">Review patient details, symptoms, and requested time.</p><div id="doctorBookings" class="list"></div></section>
+        <section class="card"><h2>Working days and hours</h2><p class="sub">Each selected day creates 30-minute appointment slots in the time range.</p><form id="availabilityForm"><div class="schedule" id="doctorSchedule"></div><div class="actions"><button type="submit">Save working hours</button><button type="button" class="secondary" id="availabilityToggle">Set unavailable</button></div><div id="availabilityMessage" class="notice" role="status"></div></form></section>
+      </div>
+      <aside class="stack"><section class="card"><h2>Notifications</h2><div id="doctorNotifications" class="list"><div class="empty">Loading notifications…</div></div></section><section class="card"><h2>Appointment management</h2><p class="sub">Accept or decline requests assigned to your doctor account. A reason is required to decline. Confirmed visits can be marked complete after their scheduled time.</p></section></aside>
+    </div>
+  </section>
+
+  <section id="adminWorkspace" class="hidden stack">
+    <section class="card"><h2>Administrator dashboard</h2><p class="sub">Unlock using the server-only <code>MEDICINE_SCANNER_ADMIN_KEY</code>. The key is used for this session only and is never stored in the page.</p>
+      <form id="adminUnlockForm" class="grid"><div class="field"><label for="adminKey">Administrator key</label><input id="adminKey" type="password" autocomplete="off" required></div><div class="field" style="align-self:end"><button type="submit">Unlock dashboard</button></div></form><div id="adminMessage" class="notice" role="status"></div>
+    </section>
+    <div id="adminTools" class="hidden stack">
+      <section class="card"><h2>Booking statistics</h2><div id="adminStats" class="stats"></div></section>
+      <section class="card"><h2>Doctor profiles</h2><p class="sub">Existing profiles without a login can be connected to a secure doctor account here.</p><div id="adminDoctorList" class="list"></div>
+        <form id="adminDoctorForm">
+          <h3 id="adminDoctorHeading">Add a doctor</h3><input id="adminDoctorId" type="hidden" value="0">
+          <div class="grid">
+            <div class="field"><label for="adminDoctorName">Doctor name</label><input id="adminDoctorName" maxlength="100" required></div>
+            <div class="field"><label for="adminDoctorSpecialty">Specialty</label><input id="adminDoctorSpecialty" maxlength="80" list="specialtyOptions" required><datalist id="specialtyOptions"></datalist></div>
+            <div class="field"><label for="adminDoctorFee">Consultation information</label><input id="adminDoctorFee" maxlength="80" placeholder="e.g. 30-minute consultation"></div>
+            <div class="field"><label for="adminDoctorPhoto">Profile photo URL (HTTPS)</label><input id="adminDoctorPhoto" type="url" maxlength="500"></div>
+            <div class="field full"><label for="adminDoctorBio">Profile information</label><textarea id="adminDoctorBio" maxlength="1000"></textarea></div>
+            <div class="field"><label for="adminDoctorUsername">Doctor username</label><input id="adminDoctorUsername" maxlength="32" autocomplete="off" required></div>
+            <div class="field"><label for="adminDoctorEmail">Doctor email</label><input id="adminDoctorEmail" type="email" maxlength="254" autocomplete="off" required></div>
+            <div class="field"><label for="adminDoctorPassword">Initial password</label><input id="adminDoctorPassword" type="password" minlength="10" maxlength="72" autocomplete="new-password" required></div>
+            <div class="field"><label class="day-label" style="margin-top:29px"><input id="adminDoctorActive" type="checkbox" checked> Active and bookable</label></div>
+          </div>
+          <div class="actions"><button type="submit">Save doctor profile</button><button type="button" id="adminDoctorReset" class="secondary">Clear form</button></div><div id="adminDoctorMessage" class="notice" role="status"></div>
+        </form>
+      </section>
+      <section class="card"><h2>Manage specialties</h2><form id="specialtyForm" class="grid"><div class="field"><label for="specialtyName">New specialty</label><input id="specialtyName" maxlength="80" required></div><div class="field" style="align-self:end"><button type="submit">Add specialty</button></div></form><div id="adminSpecialties" class="list" style="margin-top:12px"></div></section>
+      <section class="card"><h2>Manage doctor availability</h2><div class="field" style="max-width:400px;margin-bottom:14px"><label for="adminScheduleDoctor">Doctor</label><select id="adminScheduleDoctor"></select></div><form id="adminScheduleForm"><div id="adminSchedule" class="schedule"></div><div class="actions"><button type="submit">Save doctor hours</button></div><div id="adminScheduleMessage" class="notice"></div></form></section>
+      <section class="card"><h2>All patient bookings</h2><div id="adminAppointments" class="table-wrap"></div></section>
+    </div>
+  </section>
+  <p class="footer-note">For urgent or emergency medical concerns, contact local emergency services or visit the nearest emergency department.</p>
+</main>
+<script src="auth-nav.js?v=appointments-20261123"></script>
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  let account = null, csrfToken = '', doctors = [], specialties = [], adminKey = '';
+  const esc = value => String(value == null ? '' : value).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+  const initials = name => String(name || 'Doctor').split(/\s+/).filter(Boolean).slice(0,2).map(part => part[0]).join('').toUpperCase();
+  function showMessage(node, text, kind) { node.textContent = text || ''; node.className = 'notice' + (kind ? ' ' + kind : ''); }
+  async function api(action, data, params) {
+    const url = new URL('api.php', location.href);
+    url.searchParams.set('action', action);
+    if (params) Object.entries(params).forEach(([key, value]) => url.searchParams.set(key, value));
+    const options = {cache:'no-store'};
+    if (data) {
+      options.method = 'POST'; options.headers = {'Content-Type':'application/json'};
+      options.body = JSON.stringify({...data, csrf_token: data.csrf_token || csrfToken});
+    }
+    const response = await fetch(url, options);
+    let result;
+    try { result = await response.json(); } catch (_) { throw new Error('The server returned an invalid response.'); }
+    if (!response.ok || !result.ok) throw new Error(result.error || 'The request could not be completed.');
+    return result;
+  }
+  function setMinDate() {
+    const date = new Date(), localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().slice(0,10);
+    $('appointmentDate').min = localDate;
+  }
+  function photoMarkup(url, name) {
+    const safeUrl = esc(url || '');
+    return '<div class="avatar">' + (safeUrl ? '<img src="' + safeUrl + '" alt="" loading="lazy" onerror="this.remove()">' : esc(initials(name))) + '</div>';
+  }
+  function renderDoctors() {
+    const query = $('doctorSearch').value.trim().toLowerCase(), specialtyId = $('specialtyFilter').value;
+    const visible = doctors.filter(doctor => (!specialtyId || String(doctor.specialty_id) === specialtyId) &&
+      (!query || (doctor.name + ' ' + doctor.specialty).toLowerCase().includes(query)));
+    $('doctorCards').innerHTML = visible.length ? visible.map(doctor =>
+      '<article class="doctor">' + photoMarkup(doctor.photo_url, doctor.name) +
+      '<div><h3>' + esc(doctor.name) + '</h3><p>' + esc(doctor.specialty) + '</p>' +
+      '<p>' + esc(doctor.consultation_fee || 'Consultation details available on request') + '</p>' +
+      '<p>' + esc(doctor.bio || 'Profile information not provided.') + '</p>' +
+      '<div class="doctor-meta"><span class="tag ' + (doctor.is_available && doctor.scheduled_days ? 'available' : 'unavailable') + '">' +
+      (!doctor.is_available ? 'Temporarily unavailable' : (doctor.scheduled_days ? 'Accepting requests' : 'Availability not yet set')) + '</span></div></div>' +
+      '<button class="select-doctor small" type="button" data-doctor="' + doctor.id + '"' +
+      (doctor.is_available && doctor.scheduled_days ? '' : ' disabled') + '>' +
+      (doctor.is_available ? (doctor.scheduled_days ? 'Choose this doctor' : 'Availability not yet set') : 'Temporarily unavailable') +
+      '</button></article>'
+    ).join('') : '<div class="empty">No doctors match this search. Try another name or specialty.</div>';
+    const selectedSpecialty = $('specialty').value;
+    $('doctorSelect').innerHTML = '<option value="">Choose a doctor</option>' +
+      doctors.filter(doctor => doctor.is_available && doctor.scheduled_days && (!selectedSpecialty || String(doctor.specialty_id) === selectedSpecialty))
+        .map(doctor => '<option value="' + doctor.id + '">' + esc(doctor.name) + ' — ' + esc(doctor.specialty) + '</option>').join('');
+  }
+  function fillSpecialties() {
+    $('specialty').innerHTML = '<option value="">Choose a specialty</option>' +
+      specialties.map(item => '<option value="' + item.id + '">' + esc(item.name) + '</option>').join('');
+    $('specialtyFilter').innerHTML = '<option value="">All specialties</option>' +
+      specialties.map(item => '<option value="' + item.id + '">' + esc(item.name) + '</option>').join('');
+    $('specialtyOptions').innerHTML = specialties.map(item => '<option value="' + esc(item.name) + '"></option>').join('');
+  }
+  function updateRecommendation() {
+    const combined = ($('condition').value + ' ' + $('symptoms').value).toLowerCase();
+    const terms = [
+      [/heart|cardiac|chest pain|palpitation/,'Cardiology'],[/skin|rash|acne|eczema/,'Dermatology'],
+      [/eye|vision|sight/,'Ophthalmology'],[/child|children|baby|infant/,'Pediatrics'],
+      [/bone|joint|fracture|back pain/,'Orthopedics'],[/pregnan|women|menstrual|reproductive/,'Gynecology'],
+      [/mental|anxiety|depress|panic|mood/,'Psychiatry'],[/tooth|teeth|dental|gum/,'Dentistry']
+    ];
+    const match = terms.find(([pattern]) => pattern.test(combined));
+    const specialty = match && specialties.find(item => item.name.toLowerCase() === match[1].toLowerCase());
+    if (specialty) {
+      $('specialty').value = String(specialty.id);
+      $('specialtyHint').textContent = 'Based on the concern entered, ' + specialty.name + ' may be a suitable department. You can change it if needed.';
+      renderDoctors();
+    } else $('specialtyHint').textContent = '';
+  }
+  async function loadSlots() {
+    const doctorId = $('doctorSelect').value, date = $('appointmentDate').value, select = $('appointmentTime');
+    select.disabled = true; select.innerHTML = '<option value="">Loading available times…</option>';
+    if (!doctorId || !date) { select.innerHTML = '<option value="">Choose a date and doctor first</option>'; return; }
+    try {
+      const result = await api('booking_slots', null, {doctor_id:doctorId,date});
+      select.innerHTML = '<option value="">Choose a time</option>' + result.slots.map(slot => '<option value="' + esc(slot) + '">' + esc(slot) + '</option>').join('');
+      if (!result.slots.length) select.innerHTML = '<option value="">No available times for this date</option>';
+      else select.disabled = false;
+    } catch (error) { select.innerHTML = '<option value="">Could not load times</option>'; showMessage($('bookingMessage'), error.message, 'error'); }
+  }
+  function statusTag(status) { return '<span class="status status-' + esc(status) + '">' + esc(status) + '</span>'; }
+  function renderBooking(item, role) {
+    const person = role === 'doctor' ? esc(item.patient_name) : esc(item.doctor_name);
+    let html = '<article class="booking"><div class="booking-top"><div><h3>' + person + '</h3><div class="details">' +
+      esc(item.specialty) + ' · ' + esc(item.appointment_date) + ' at ' + esc(item.appointment_time) + '</div></div>' + statusTag(item.status) + '</div>';
+    if (role === 'doctor') html += '<p><b>Patient contact:</b> ' + esc(item.patient_email) + (item.patient_phone ? ' · ' + esc(item.patient_phone) : '') + '</p>';
+    html += '<p><b>Symptoms/condition:</b> ' + esc(item.symptoms) + '</p>';
+    if (item.additional_info) html += '<p><b>Additional information:</b> ' + esc(item.additional_info) + '</p>';
+    if (item.rejection_reason) html += '<p><b>Doctor note:</b> ' + esc(item.rejection_reason) + '</p>';
+    if (role === 'patient' && item.status === 'REDIRECTED') {
+      html += '<div class="doctor" style="margin-top:12px">' + photoMarkup(item.alternative_photo_url, item.alternative_doctor_name) +
+        '<div><h3>' + esc(item.alternative_doctor_name) + '</h3><p>' + esc(item.alternative_specialty || item.specialty) + '</p>' +
+        '<p>Available ' + esc(item.appointment_date) + ' at ' + esc(item.appointment_time) + '</p></div>' +
+        '<div class="actions" style="grid-column:1/-1;margin:0"><button class="small" data-action="alternative-accept" data-id="' + item.id + '">Accept alternative</button>' +
+        '<button class="secondary small" data-action="alternative-decline" data-id="' + item.id + '">Decline</button></div></div>';
+    }
+    if (role === 'patient' && ['PENDING','ACCEPTED','REDIRECTED'].includes(item.status))
+      html += '<div class="actions"><button class="danger small" data-action="cancel" data-id="' + item.id + '">Cancel request</button></div>';
+    if (role === 'doctor' && item.status === 'PENDING')
+      html += '<div class="actions"><button class="small" data-action="accept" data-id="' + item.id + '">Accept request</button><button class="danger small" data-action="reject" data-id="' + item.id + '">Decline request</button></div>';
+    if (role === 'doctor' && item.status === 'ACCEPTED')
+      html += '<div class="actions"><button class="secondary small" data-action="complete" data-id="' + item.id + '">Mark completed</button></div>';
+    return html + '</article>';
+  }
+  async function loadBookings() {
+    const result = await api('booking_list');
+    const node = account.role === 'doctor' ? $('doctorBookings') : $('patientBookings');
+    node.innerHTML = result.appointments.length ? result.appointments.map(item => renderBooking(item, account.role)).join('') : '<div class="empty">No appointment requests yet.</div>';
+  }
+  async function loadNotifications() {
+    const result = await api('notifications_list'), target = account.role === 'doctor' ? $('doctorNotifications') : $('notifications');
+    target.innerHTML = result.notifications.length ? result.notifications.map(item =>
+      '<div class="notification ' + (item.read_at ? 'read' : '') + '">' + esc(item.message) +
+      '<time>' + esc(new Date(Number(item.created_at)).toLocaleString()) + '</time></div>'
+    ).join('') : '<div class="empty">No notifications yet.</div>';
+  }
+  function scheduleRows(container, saved) {
+    const byDay = {};
+    (saved || []).forEach(item => byDay[Number(item.weekday)] = item);
+    container.innerHTML = weekdays.map((day, weekday) => {
+      const item = byDay[weekday];
+      return '<div class="day-row"><label class="day-label"><input type="checkbox" data-weekday="' + weekday + '"' + (item ? ' checked' : '') + '> ' + day + '</label>' +
+        '<input type="time" data-start="' + weekday + '" value="' + esc(item ? item.start_time : '09:00') + '" aria-label="' + day + ' start time">' +
+        '<input type="time" data-end="' + weekday + '" value="' + esc(item ? item.end_time : '17:00') + '" aria-label="' + day + ' end time"></div>';
+    }).join('');
+  }
+  function readSchedule(container) {
+    return Array.from(container.querySelectorAll('[data-weekday]:checked')).map(check => {
+      const day = check.dataset.weekday;
+      return {weekday:Number(day),start_time:container.querySelector('[data-start="' + day + '"]').value,end_time:container.querySelector('[data-end="' + day + '"]').value};
+    });
+  }
+  async function loadDoctorWorkspace() {
+    $('patientWorkspace').classList.add('hidden'); $('doctorWorkspace').classList.remove('hidden');
+    const result = await api('doctor_availability_get');
+    scheduleRows($('doctorSchedule'), result.schedule);
+    $('availabilityToggle').textContent = result.is_available ? 'Set unavailable' : 'Set available';
+    $('availabilityToggle').dataset.available = result.is_available ? '1' : '0';
+    if (!result.is_available && result.unavailable_reason) showMessage($('availabilityMessage'), 'Unavailable: ' + result.unavailable_reason, '');
+    await Promise.all([loadBookings(), loadNotifications()]);
+  }
+  function adminData(data) { return {...data,key:adminKey}; }
+  async function unlockAdmin() {
+    const key = $('adminKey').value;
+    if (!key) throw new Error('Enter the administrator key.');
+    const result = await api('admin_summary', {key});
+    adminKey = key;
+    $('adminKey').value = '';
+    $('adminTools').classList.remove('hidden');
+    showMessage($('adminMessage'), 'Administrator dashboard unlocked.', 'good');
+    renderAdmin(result);
+  }
+  function renderAdmin(result) {
+    const names = ['PENDING','ACCEPTED','REJECTED','REDIRECTED','CANCELLED','COMPLETED','doctors','patients'];
+    $('adminStats').innerHTML = names.map(name => '<div class="stat"><b>' + Number(result.summary[name] || 0) + '</b><span>' + esc(name.replace('_',' ').toLowerCase()) + '</span></div>').join('');
+    doctors = result.doctors;
+    specialties = result.specialties;
+    $('adminDoctorList').innerHTML = result.doctors.map(doctor =>
+      '<div class="admin-doctor"><div><b>' + esc(doctor.name) + '</b><p>' + esc(doctor.specialty) + ' · ' +
+      (doctor.user_id ? 'doctor login linked' : 'no doctor login') + ' · ' + (doctor.is_available ? 'available' : 'unavailable') + '</p></div>' +
+      '<div class="actions" style="margin:0"><button class="secondary small" data-action="edit-doctor" data-id="' + doctor.id + '">Edit</button>' +
+      '<button class="secondary small" data-action="admin-availability" data-id="' + doctor.id + '" data-available="' + (Number(doctor.is_available) ? '1' : '0') + '">' + (Number(doctor.is_available) ? 'Set unavailable' : 'Set available') + '</button>' +
+      (Number(doctor.is_active) ? '<button class="danger small" data-action="remove-doctor" data-id="' + doctor.id + '">Remove</button>' : '') + '</div></div>'
+    ).join('') || '<div class="empty">No doctor profiles.</div>';
+    $('adminSpecialties').innerHTML = result.specialties.map(item => '<div class="admin-doctor"><b>' + esc(item.name) +
+      '</b><button type="button" class="danger small" data-action="remove-specialty" data-id="' + item.id + '">Remove</button></div>').join('');
+    $('adminScheduleDoctor').innerHTML = result.doctors.map(doctor => '<option value="' + doctor.id + '">' + esc(doctor.name) + ' — ' + esc(doctor.specialty) + '</option>').join('');
+    $('adminAppointments').innerHTML = result.appointments.length ? '<table><thead><tr><th>Patient</th><th>Doctor</th><th>Specialty</th><th>Date and time</th><th>Status</th><th>Symptoms</th></tr></thead><tbody>' +
+      result.appointments.map(item => '<tr><td>' + esc(item.patient_name) + '<br>' + esc(item.patient_email) + '</td><td>' + esc(item.doctor_name) + '</td><td>' + esc(item.specialty) +
+      '</td><td>' + esc(item.appointment_date) + ' ' + esc(item.appointment_time) + '</td><td>' + statusTag(item.status) + '</td><td>' + esc(item.symptoms) + '</td></tr>').join('') +
+      '</tbody></table>' : '<div class="empty">No patient bookings yet.</div>';
+    fillSpecialties();
+    scheduleRows($('adminSchedule'), []);
+    loadAdminSchedule();
+  }
+  function resetDoctorForm() {
+    $('adminDoctorForm').reset(); $('adminDoctorId').value = '0'; $('adminDoctorHeading').textContent = 'Add a doctor'; $('adminDoctorActive').checked = true;
+    $('adminDoctorUsername').required=true; $('adminDoctorEmail').required=true; $('adminDoctorPassword').required=true;
+  }
+  async function refreshAdmin() {
+    const result = await api('admin_summary', {key:adminKey});
+    renderAdmin(result);
+  }
+  async function loadAdminSchedule() {
+    const doctorId = $('adminScheduleDoctor').value;
+    if (!doctorId || !adminKey) return;
+    try {
+      const result = await api('admin_availability_get',adminData({doctor_id:Number(doctorId)}));
+      scheduleRows($('adminSchedule'),result.schedule);
+    } catch (error) { showMessage($('adminScheduleMessage'),error.message,'error'); }
+  }
+
+  async function init() {
+    try {
+      const [token, me] = await Promise.all([api('auth_token'), api('auth_me')]);
+      csrfToken = token.csrf_token; account = me.account;
+      if (!account) { location.replace('account.html'); return; }
+      if (account.role === 'doctor') {
+        $('patientWorkspace').classList.add('hidden');
+        $('doctorWorkspace').classList.remove('hidden');
+        await loadDoctorWorkspace();
+      } else {
+        $('patientName').value = account.full_name || '';
+        $('patientEmail').value = account.email || '';
+        $('patientPhone').value = account.phone || '';
+        setMinDate();
+        const catalog = await api('booking_catalog');
+        doctors = catalog.doctors; specialties = catalog.specialties; fillSpecialties(); renderDoctors();
+        await Promise.all([loadBookings(), loadNotifications()]);
+      }
+    } catch (error) {
+      showMessage(account && account.role === 'doctor' ? $('availabilityMessage') : $('bookingMessage'), error.message, 'error');
+    }
+  }
+
+  $('doctorSearch').addEventListener('input', renderDoctors);
+  $('specialtyFilter').addEventListener('change', renderDoctors);
+  $('specialty').addEventListener('change', renderDoctors);
+  $('doctorCards').addEventListener('click', event => {
+    const button = event.target.closest('[data-doctor]');
+    if (!button) return;
+    const doctor = doctors.find(item => String(item.id) === button.dataset.doctor);
+    if (!doctor) return;
+    $('specialty').value = String(doctor.specialty_id); renderDoctors(); $('doctorSelect').value = String(doctor.id);
+    $('bookingPanel').scrollIntoView({behavior:'smooth',block:'start'}); loadSlots();
+  });
+  $('doctorSelect').addEventListener('change', loadSlots);
+  $('appointmentDate').addEventListener('change', loadSlots);
+  $('condition').addEventListener('change', updateRecommendation);
+  $('symptoms').addEventListener('input', updateRecommendation);
+  $('bookingForm').addEventListener('submit', async event => {
+    event.preventDefault(); const button = $('submitBooking'); button.disabled = true;
+    showMessage($('bookingMessage'), 'Submitting your appointment request…', '');
+    try {
+      const result = await api('booking_create', Object.fromEntries(new FormData(event.currentTarget).entries()));
+      showMessage($('bookingMessage'), result.message, 'good'); await Promise.all([loadBookings(),loadNotifications()]);
+      $('appointmentTime').value = '';
+    } catch (error) { showMessage($('bookingMessage'), error.message, 'error'); }
+    finally { button.disabled = false; }
+  });
+  document.addEventListener('click', async event => {
+    const button = event.target.closest('[data-action]'); if (!button) return;
+    const id = Number(button.dataset.id), action = button.dataset.action; button.disabled = true;
+    try {
+      if (action === 'accept' || action === 'reject' || action === 'complete') {
+        let reason = '';
+        if (action === 'reject') { reason = window.prompt('Please enter the reason for declining this request:') || ''; if (!reason.trim()) { button.disabled=false; return; } }
+        await api('doctor_decision',{appointment_id:id,decision:action.toUpperCase(),reason});
+      } else if (action === 'alternative-accept') await api('booking_alternative_accept',{appointment_id:id});
+      else if (action === 'alternative-decline') await api('booking_alternative_decline',{appointment_id:id});
+      else if (action === 'cancel') { if (!window.confirm('Cancel this appointment request?')) {button.disabled=false;return;} await api('booking_cancel',{appointment_id:id}); }
+      else if (action === 'remove-doctor') { if (!window.confirm('Remove this doctor from new bookings? Existing appointments will be retained.')) {button.disabled=false;return;} await api('admin_doctor_remove',adminData({doctor_id:id})); await refreshAdmin(); }
+      else if (action === 'remove-specialty') { if (!window.confirm('Remove this specialty?')) {button.disabled=false;return;} await api('admin_specialty_remove',adminData({specialty_id:id})); await refreshAdmin(); }
+      else if (action === 'admin-availability') {
+        const available = button.dataset.available !== '1';
+        const reason = available ? '' : (window.prompt('Reason this doctor is unavailable (optional):') || '');
+        await api('admin_doctor_availability',adminData({doctor_id:id,is_available:available,reason})); await refreshAdmin();
+      }
+      else if (action === 'edit-doctor') {
+        const doctor = doctors.find(item => Number(item.id) === id); if (!doctor) return;
+        $('adminDoctorId').value=doctor.id; $('adminDoctorName').value=doctor.name; $('adminDoctorSpecialty').value=doctor.specialty;
+        $('adminDoctorBio').value=doctor.bio || ''; $('adminDoctorPhoto').value=doctor.photo_url || ''; $('adminDoctorFee').value=doctor.consultation_fee || '';
+        $('adminDoctorActive').checked=Boolean(Number(doctor.is_active)); $('adminDoctorHeading').textContent='Edit ' + doctor.name;
+        $('adminDoctorUsername').required=!doctor.user_id; $('adminDoctorEmail').required=!doctor.user_id; $('adminDoctorPassword').required=!doctor.user_id;
+        button.disabled=false;
+        $('adminDoctorForm').scrollIntoView({behavior:'smooth',block:'start'});
+        return;
+      }
+      if (['accept','reject','complete','alternative-accept','alternative-decline','cancel'].includes(action)) {
+        await loadBookings(); await loadNotifications();
+      }
+    } catch (error) {
+      if (account.role === 'doctor') showMessage($('availabilityMessage'),error.message,'error');
+      else if (adminKey && (action.startsWith('remove') || action.startsWith('admin-'))) showMessage($('adminMessage'),error.message,'error');
+      else showMessage($('bookingMessage'),error.message,'error');
+      button.disabled=false;
+    }
+  });
+  $('availabilityForm').addEventListener('submit', async event => {
+    event.preventDefault();
+    try { await api('availability_save',{schedule:readSchedule($('doctorSchedule'))}); showMessage($('availabilityMessage'),'Your working hours have been saved.','good'); await loadSlots(); }
+    catch(error) { showMessage($('availabilityMessage'),error.message,'error'); }
+  });
+  $('availabilityToggle').addEventListener('click', async event => {
+    const available = event.currentTarget.dataset.available !== '1';
+    const reason = available ? '' : (window.prompt('Reason you are unavailable (optional):') || '');
+    try { await api('doctor_availability_status',{is_available:available,reason}); await loadDoctorWorkspace(); }
+    catch(error) { showMessage($('availabilityMessage'),error.message,'error'); }
+  });
+  $('markNotificationsRead').addEventListener('click', async () => {
+    try { await api('notifications_read',{}); await loadNotifications(); } catch(error) { showMessage($('bookingMessage'),error.message,'error'); }
+  });
+  $('adminUnlockForm').addEventListener('submit', async event => { event.preventDefault(); try { await unlockAdmin(); } catch(error) { adminKey=''; $('adminTools').classList.add('hidden'); showMessage($('adminMessage'),error.message,'error'); } });
+  $('adminDoctorReset').addEventListener('click',resetDoctorForm);
+  $('adminDoctorForm').addEventListener('submit',async event => {
+    event.preventDefault();
+    const data={doctor_id:Number($('adminDoctorId').value),name:$('adminDoctorName').value,specialty:$('adminDoctorSpecialty').value,bio:$('adminDoctorBio').value,
+      photo_url:$('adminDoctorPhoto').value,consultation_fee:$('adminDoctorFee').value,username:$('adminDoctorUsername').value,email:$('adminDoctorEmail').value,
+      password:$('adminDoctorPassword').value,is_active:$('adminDoctorActive').checked};
+    try { await api('admin_doctor_save',adminData(data)); resetDoctorForm(); showMessage($('adminDoctorMessage'),'Doctor profile saved.','good'); await refreshAdmin(); }
+    catch(error) { showMessage($('adminDoctorMessage'),error.message,'error'); }
+  });
+  $('specialtyForm').addEventListener('submit',async event => {
+    event.preventDefault();
+    try { await api('admin_specialty_save',adminData({name:$('specialtyName').value})); $('specialtyForm').reset(); await refreshAdmin(); }
+    catch(error) { showMessage($('adminMessage'),error.message,'error'); }
+  });
+  $('adminScheduleDoctor').addEventListener('change', async () => {
+    await loadAdminSchedule();
+  });
+  $('showAdmin').addEventListener('click',() => {
+    $('adminWorkspace').classList.toggle('hidden');
+    $('adminWorkspace').scrollIntoView({behavior:'smooth',block:'start'});
+  });
+  $('adminScheduleForm').addEventListener('submit',async event => {
+    event.preventDefault();
+    try { await api('admin_availability_save',adminData({doctor_id:Number($('adminScheduleDoctor').value),schedule:readSchedule($('adminSchedule'))})); showMessage($('adminScheduleMessage'),'Doctor working hours saved.','good'); }
+    catch(error) { showMessage($('adminScheduleMessage'),error.message,'error'); }
+  });
+  window.setInterval(() => {
+    if (document.hidden || !account) return;
+    Promise.all([loadBookings(),loadNotifications()]).catch(error => {
+      showMessage(account.role === 'doctor' ? $('availabilityMessage') : $('bookingMessage'),
+        'Could not refresh appointment updates. ' + error.message,'error');
+    });
+  },30000);
+  init();
+})();
+</script>
+</body>
+</html>
